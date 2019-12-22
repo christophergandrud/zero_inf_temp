@@ -8,7 +8,7 @@ source("functions.R")
 # Scenario 2 simulations -------------------------------------------------------
 #
 # One set of simulations with all the estimation methods
-sample_sizes <- c(4e5, 6e5, 8e5) 
+sample_sizes <- c(4e5, 6e5, 8e5)
 b_mu = 6.0565
 
 # Find mean and prop difference
@@ -16,7 +16,7 @@ true_pop_scen2 <- one_ab_sim(1e8, b_mu = b_mu)
 true_diff_ab_scen2 <- mean(true_pop_scen2$a) - mean(true_pop_scen2$b)
 true_sd_a <- sd(true_pop_scen2$a)
 true_sd_b <- sd(true_pop_scen2$b)
-true_diff_pop_scen2 <- mean(ifelse(true_pop_scen2$a == 0, 0, 1)) - 
+true_diff_pop_scen2 <- mean(ifelse(true_pop_scen2$a == 0, 0, 1)) -
     mean(ifelse(true_pop_scen2$b == 0, 0, 1))
 rm(true_pop_scen2)
 
@@ -47,7 +47,7 @@ for (i in 1:50) {
 scen2_stats_multi_sim_df <- bind_rows(scen2_stats_multi_sim_list, .id = "column_label")
 
 # scen1_fnr <- bind_rows(
-#     scen2_stats_multi_sim_df[, c("column_label", "estimate", "observations", "p_value")], 
+#     scen2_stats_multi_sim_df[, c("column_label", "estimate", "observations", "p_value")],
 #     fnr)
 
 # Plot p-values ----------------------------------------------------------------
@@ -61,13 +61,12 @@ ggplot(scen2_stats_multi_sim_df, aes(observations, p_value,
 ggsave(filename = "figs/scen2_pvalues.png")
 
 # Power (can we find any difference of the distributions) ----------------------
-fnr$estimate <- factor(fnr$estimate, 
+fnr$estimate <- factor(fnr$estimate,
                            levels = c("linear regression (original outcome)",
                                       "linear probability", "zero-inf (count)",
                                       "zero-inf (zero)"),
-                           labels = c("t-test power (not from simulation)", 
-                                      "linear regression (original outcome)",
-                                      "linear probability (0, 1 transformed outcome)", 
+                           labels = c("linear regression (original outcome)",
+                                      "linear probability (0, 1 transformed outcome)",
                                       "zero-inflated negative binomial (count)",
                                       "zero-inlated negative binomial (zero)"))
 

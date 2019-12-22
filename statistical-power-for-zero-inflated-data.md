@@ -4,6 +4,15 @@ Christopher Gandrud
 
 # TLDR
 
+Clearly define how your product innovations will bring value to
+customers. Do they **create new value** for customers that currently
+don’t get much value from the existing product? Do they **double
+down**, imroving existing value that you already bring to customers?
+Having a clear undertanding of the value you aim to create not only
+brings clearer production direction and helps you know if you are being
+successful, but it allows you to identify when you can run much
+**shorter experiments**.
+
 If you can measure the value your product brings to customers in terms
 of **either or events** (either customers use Search for two or more
 days in seven or they don’t) then you can **cut your experimentation
