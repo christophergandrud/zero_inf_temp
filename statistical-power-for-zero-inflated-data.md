@@ -14,7 +14,7 @@ successful, but it allows you to identify when you can run much
 **shorter experiments**.
 
 If you can measure the value your product brings to customers in terms
-of **either or events** (either customers use Search for two or more
+of **action/no action** (either customers use Search for two or more
 days in seven or they don’t) then you can **cut your experimentation
 runtime** (up to 60%). Running faster experiments will increase the
 speed you learn about your product ideas. The faster you learn about the
@@ -43,13 +43,22 @@ Most customers don’t buy anything in a month. Most customers don’t use
 Search more than one day in a month. Most customers who visit the site
 in a month only visit once or twice. Etc. Etc. Etc.
 
-There are basically two types of product opportunities:
+A highly skewed KPI distribution like this often indicates that we have
+two broad types of customers:
 
-  - **doubling down**: making products that already work for some
-    customers, work even better for them
+  - Customers who **don’t currently get much value** from our service,
+    so have low or 0 values of the KPI.
+
+  - Customers who **do get value** from our service. They have high KPI
+    values.
+
+In these cases, there are two big product opportunities:
 
   - **create new value**: making products work for customers we don’t
     currently bring enough value to
+
+  - **doubling down**: making products that already work for some
+    customers, work even better for them
 
 You will gain a lot of **product direction clarity** and possibly
 **experimentation speed** by using different KPIs to measure success on
@@ -132,21 +141,6 @@ sizes to detect an effect at the 80% level for different types of KPIs.
 
 To see this, imagine that we run an A/B test. The results look like
 this:
-
-``` r
-n = 1e6
-one_sim <- tibble(A = sim_zeroinf(nsims = n),
-                  B = sim_zeroinf(nsims = n, b_prob_non_zero <- 0.555))
-one_sim_long <- pivot_longer(one_sim, everything(), names_to = "variant", 
-                             values_to = "KPI")
-
-ggplot(one_sim_long, aes(KPI)) +
-    facet_wrap(.~variant) +
-    stat_ecdf(color = "orange", size = 1) +
-    scale_y_continuous(labels = scales::percent) +
-    ylab("\nPercent of Customers") +
-    coord_flip()
-```
 
 <img src="statistical-power-for-zero-inflated-data_files/figure-gfm/unnamed-chunk-2-1.png" height="350" />
 

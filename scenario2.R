@@ -46,9 +46,11 @@ for (i in 1:50) {
 }
 scen2_stats_multi_sim_df <- bind_rows(scen2_stats_multi_sim_list, .id = "column_label")
 
-# scen1_fnr <- bind_rows(
-#     scen2_stats_multi_sim_df[, c("column_label", "estimate", "observations", "p_value")],
-#     fnr)
+# Power observed across simulations
+scen2_stats_multi_sim_df$sig_05 <- scen2_stats_multi_sim_df$p_value < 0.05
+fnr <- scen2_stats_multi_sim_df %>% group_by(estimate, observations) %>%
+    summarise(power = mean(sig_05)) 
+fnr$column_label <- "fnr"
 
 # Plot p-values ----------------------------------------------------------------
 ggplot(scen2_stats_multi_sim_df, aes(observations, p_value,
@@ -62,8 +64,9 @@ ggsave(filename = "figs/scen2_pvalues.png")
 
 # Power (can we find any difference of the distributions) ----------------------
 fnr$estimate <- factor(fnr$estimate,
-                           levels = c("linear regression (original outcome)",
-                                      "linear probability", "zero-inf (count)",
+                           levels = c("linear regression",
+                                      "linear probability", 
+                                      "zero-inf (count)",
                                       "zero-inf (zero)"),
                            labels = c("linear regression (original outcome)",
                                       "linear probability (0, 1 transformed outcome)",
@@ -76,7 +79,7 @@ ggplot(fnr, aes(observations, power)) +
     geom_hline(yintercept = 0.8, linetype = "dotted") +
     scale_y_continuous(labels = scales::percent, breaks = seq(0.2, 1, 0.2)) +
     ggtitle("Power of Identifying A != B (50 simulations)",
-            subtitle = "Scenario 2: Treatment causes a relative mean difference of 3.1%") +
+            subtitle = "Scenario 2: Treatment causes a relative mean difference of 3.1%\nLeading to a difference of probability of non-zero outcome of 0.07%") +
     xlab("\nSample Size per Treatment Arm") +
     ylab("Power (for any difference A vs. B)\n")
 ggsave(filename = "figs/scen2_power.png", width = 8, height = 8)

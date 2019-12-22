@@ -16,7 +16,7 @@ source("functions.R")
 
 Clearly define how your product innovations will bring value to customers. Do they **create new value** for customers that currently don't get much value from the existing product? Do they **double down**, imroving existing value that you already bring to customers? Having a clear undertanding of the value you aim to create not only brings clearer production direction and helps you know if you are being successful, but it allows you to identify when you can run much **shorter experiments**. 
 
-If you can measure the value your product brings to customers in terms of **either or events** (either customers use Search for two or more days in seven or they don't) then you can **cut your experimentation runtime** (up to 60%). Running faster experiments will increase the speed you learn about your product ideas. The faster you learn about the impact of your product ideas, the **faster you will be successful**.
+If you can measure the value your product brings to customers in terms of **action/no action** (either customers use Search for two or more days in seven or they don't) then you can **cut your experimentation runtime** (up to 60%). Running faster experiments will increase the speed you learn about your product ideas. The faster you learn about the impact of your product ideas, the **faster you will be successful**.
 
 # Know our customers to know your product opportunities and define your success
 
@@ -39,11 +39,17 @@ What do you see? Over 50% of customers have a 0 for this KPI. They don't take th
 
 Remember this. It is crucial information. Many (most?) of the basic e-commerce KPIs usually have a similar **highly skewed** distribution. Most of our customers don't do what the KPI is measuring, or they don't do it very much. Most customers don't add anything to cart in a month. Most customers don't buy anything in a month.  Most customers don't use Search more than one day in a month. Most customers who visit the site in a month only visit once or twice. Etc. Etc. Etc.
 
-There are basically two types of product opportunities: 
+A highly skewed KPI distribution like this often indicates that we have two broad types of customers:
 
-- **doubling down**: making products that already work for some customers, work even better for them
+- Customers who **don't currently get much value** from our service, so have low or 0 values of the KPI. 
+
+- Customers who **do get value** from our service. They have high KPI values.
+
+In these cases, there are two big product opportunities: 
 
 - **create new value**: making products work for customers we don't currently bring enough value to
+
+- **doubling down**: making products that already work for some customers, work even better for them
 
 You will gain a lot of **product direction clarity** and possibly **experimentation speed** by using different KPIs to measure success on these two value creation opportunities.
 
@@ -92,7 +98,7 @@ When you run an experiment, you want to be confident that you will consistently 
 
 To see this, imagine that we run an A/B test. The results look like this:
 
-```{r echo=TRUE, out.height="350", cache=TRUE}
+```{r echo=FALSE, out.height="350", cache=TRUE}
 n = 1e6
 one_sim <- tibble(A = sim_zeroinf(nsims = n),
                   B = sim_zeroinf(nsims = n, b_prob_non_zero <- 0.555))
