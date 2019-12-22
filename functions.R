@@ -20,7 +20,7 @@ one_ab_sim <- function(nsims = 100000,
 }
 
 compare_inference <- function(data, only_linear = FALSE,
-                              include_binary = FALSE) {
+                              include_binary = FALSE, include_zero_prob = FALSE) {
     obs <- nrow(data)
     message(obs)
 
@@ -37,7 +37,8 @@ compare_inference <- function(data, only_linear = FALSE,
     
     if (!isTRUE(only_linear)) {
         # Zero-inflated negative binomial
-        fitted_zeroinf <- zeroinfl(y ~ variant, dist = "negbin", data = data_long)
+        fitted_zeroinf <- zeroinfl(y ~ variant, dist = "negbin", 
+                                   data = data_long)
         sum_zeroinf <- summary(fitted_zeroinf)
         zeroinf_stats_count <- tibble(
             estimate = "zero-inf (count)",
@@ -60,6 +61,13 @@ compare_inference <- function(data, only_linear = FALSE,
             p_value = summary(fitted_linear_prob)$coefficients[2, 4]
         )
         out <- bind_rows(out, linear_stats_prob)
+    }
+
+    if(isTRUE(include_zero_prob) && !isTRUE(only_linear)) {
+        message("For zero-inf (zero), returning difference of 0 component probability")
+        zeros_comp <- predict(fitted_zeroinf, type = "zero", 
+                                  newdata = data.frame(variant = c("a", "b")))
+        out[out$estimate == "zero-inf (zero)", "param_est"] <- zeros_comp[2] - zeros_comp[1]
     }
 
     out$observations <- obs
