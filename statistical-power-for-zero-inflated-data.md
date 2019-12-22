@@ -1,34 +1,207 @@
-You Won’t Believe How I Cut Experiment Runtime By Up to 60%\!
+You Won’t Believe How I Cut A/B Test Runtime By Up to 60%\!
 ================
 Christopher Gandrud
 
 # TLDR
 
-You can **dramatically reduce your experimentation time** (by up to 60%)
-by:
+If you can measure the value your product brings to customers in terms
+of **either or events** (either customers use Search for two or more
+days in seven or they don’t) then you can **cut your experimentation
+runtime** (up to 60%). Running faster experiments will increase the
+speed you learn about your product ideas. The faster you learn about the
+impact of your product ideas, the **faster you will be successful**.
 
-1.  carefully defining how your product will bring value to customers
-    and
+# Know our customers to know your product opportunities and define your success
 
-2.  **what success looks** (what KPI you improve) when you bring this
-    success.
+When you start a new product you define the customer problem you want to
+solve and what actions you would expect to see customers taking if you
+solved it. Do they buy more? Do they visit more? Do they engage with
+content more?
 
-Running faster experiments will increase the speed you learn about your
-product ideas. The faster you learn about the impact of your product
-ideas, the **faster you will be successful**.
-
-# Step 1: Know our customers to know your product oportunities\!
+At this stage, always, always, always, look at the **distribution** of
+actions customers currently take. For example:
 
 <img src="statistical-power-for-zero-inflated-data_files/figure-gfm/unnamed-chunk-1-1.png" height="350" />
 
-# Statistical Power for Zero-Inflated Data
+What do you see? Over 50% of customers have a 0 for this KPI. They don’t
+take this action at all\!
 
-<img src="figs/compar_power.png" height="500" />
+Remember this. It is crucial information. Many (most?) of the basic
+e-commerce KPIs usually have a similar **highly skewed** distribution.
+Most of our customers don’t do what the KPI is measuring, or they don’t
+do it very much. Most customers don’t add anything to cart in a month.
+Most customers don’t buy anything in a month. Most customers don’t use
+Search more than one day in a month. Most customers who visit the site
+in a month only visit once or twice. Etc. Etc. Etc.
 
-## Extreme 1: the product innovation works by creating new value
+There are basically two types of product opportunities:
+
+  - **doubling down**: making products that already work for some
+    customers, work even better for them
+
+  - **create new value**: making products work for customers we don’t
+    currently bring enough value to
+
+You will gain a lot of **product direction clarity** and possibly
+**experimentation speed** by using different KPIs to measure success on
+these two value creation opportunities.
+
+Why?
+
+# Product direction
+
+Imagine you want to build a product that helps customers who have a hard
+time finding what they like on our site. By doing this, you anticipate
+that we will earn more revenue; customers who don’t buy much (or at all)
+will buy more. Should you use revenue per customer as your primary
+success KPI?
+
+No.
+
+What is revenue per user? It is the average revenue a customer spends.
+Remember that, like almost all of our KPIs, revenue per user is highly
+skewed. Most people buy nothing and some people buy a lot. If you test
+your new product and revenue per user goes up, is this because you now
+bring new value to the customers you targetted? Or did you marginally
+improve the experience for customers who already buy a lot?
+
+You can’t tell by looking at revenue per user\! Average revenue could go
+up because there are a lot more customers making a first or second
+purchase they wouldn’t have otherwise *or* because a few high spending
+users spend even more.
+
+In general, consider defining success like this:
+
+| Who are you bringing value to? | Type of success KPI | Statistical name | Example                                                       |
+| ------------------------------ | ------------------- | ---------------- | ------------------------------------------------------------- |
+| Creating new value             | Action/No Action    | Binary           | Used search 2 days+ in 7 or not                               |
+| Doubling down                  | Amount of action    | Continuous       | Revenue per user for customer that were already likely to buy |
+
+Important: **repeated actions** (e.g. 2+ days using search) are
+generally more valuable indicators that you brought new value to
+customers. It is rare that a customer would do something multiple times
+on distinct days, if they weren’t getting value out of it.
+
+If you use these types of success metrics, you will be able to better
+understand if your product is successful for the reasons you
+anticipated.
+
+Why does it matter to know if you are creating new value or doubling
+down? It matters because it **indicates how big your product impact
+could be** given your customers.
+
+If you already serve all of the customers pretty well, then most of your
+opportunity will be in doubling down on their experience.
+
+If there is a large chunk of customers who serve poorly, then there is a
+lot of opportunity at creating new value for them. Even if you don’t
+move the average much in one experiment for these customers, by bringing
+them new value you could be developing new relationships that will bring
+them back in the future.
+
+# Faster A/B tests
+
+How can choosing the right types of KPIs help make our experiments
+faster?
+
+## Short answer
+
+  - You need **smaller sample sizes** to consistently detect an effect
+    for **action/no action KPIs** (e.g. 2+ visits or not).
+
+  - You need **larger sample sizes** to consistently detect an effect on
+    KPIs that measure the **amount of an action** (revenue per user).
+
+## Long answer
+
+When you run an experiment, you want to be confident that you will
+consistently detect that your product has an effect, when in reality it
+does have an effect. This is called **statistical power**. A general
+rule of thumb is that you want **80% power**: you want to correctly
+detect an effect when there is one 80% of the time. It different samples
+sizes to detect an effect at the 80% level for different types of KPIs.
+
+To see this, imagine that we run an A/B test. The results look like
+this:
+
+``` r
+n = 1e6
+one_sim <- tibble(A = sim_zeroinf(nsims = n),
+                  B = sim_zeroinf(nsims = n, b_prob_non_zero <- 0.555))
+one_sim_long <- pivot_longer(one_sim, everything(), names_to = "variant", 
+                             values_to = "KPI")
+
+ggplot(one_sim_long, aes(KPI)) +
+    facet_wrap(.~variant) +
+    stat_ecdf(color = "orange", size = 1) +
+    scale_y_continuous(labels = scales::percent) +
+    ylab("\nPercent of Customers") +
+    coord_flip()
+```
+
+<img src="statistical-power-for-zero-inflated-data_files/figure-gfm/unnamed-chunk-2-1.png" height="350" />
+
+Imagine two ways to analyse this data. The first is to compare the
+**difference of mean** KPI values of the A and B groups using a
+statistical test called a **t-test**. Another way to analyse the data
+would be to look at the **difference of proportions** of customers who
+had a KPI value greater than 1. These two tests have very different
+statistical power at different sample sizes for a simple simulation:
+
+<img src="statistical-power-for-zero-inflated-data_files/figure-gfm/unnamed-chunk-3-1.png" height="500" />
+
+To detect a difference of proportions, we reach the 80% power level at
+about 300,000 customers per treatment arm (A or B). It takes us 800,000
+customers per treatment arm to detect the difference of means. The test
+would need to run over **twice as long** (in reality it would probably
+take even longer, because the longer you run a test, the slower new
+customers enter the test).
+
+Of course the difference of means and difference of proportions tell you
+different things. The first tells you how much you have moved average
+spending, this could be becuase your product converts customers by
+bringing new value or because it has doubled down and made a product
+that works for some customers, work even better for them.
+
+But if you are focused on creating a product that brings new value, it
+is less important to move the needle with customers that already get
+value from the site. You can focus on identifying an effect on
+increasing the proportion of customers that take significant new actions
+and run shorter tests.
+
+If you are focused on doubling down, moving up the average for the
+already high spenders, then you will likely need to run the test for the
+longer time period.
+
+# Annex 1: Simulations to show this works
+
+I ran some simulations to see how different methods work at consistently
+identifying true “double down” (average differences) and “creating
+value” effects (different proportions of customer actions). These
+methods include:
+
+  - linear regression to identify differences of means (same as a
+    t-test)
+
+  - linear probability model to identify if there is a difference of
+    proportions of customers that have a KPI value above a certain level
+
+  - [zero-inflated
+    regression](https://www.google.com/search?q=zero+inflated+regression+university+of+virginia&oq=zero+inflated+regression+university+of+virginia&aqs=chrome..69i57.9314j0j7&sourceid=chrome&ie=UTF-8)
+    does both at the same time
+
+## Extreme 1: Product only creates new value (increases proportion of customers taking the minimum action)
 
 <img src="figs/scen1_power.png" height="700" />
 
-## Extreme 2: product innovation works by doubling down
+The linear probability model and the zero inflated regression (zero
+component) both correctly identify the true effect at similar rates and
+sample sizes. The linear regression does not identify an effect
+consistently until sample sizes that are more than twice as large.
+
+## Extreme 2: product innovation works by doubling down (moves average for customers who already take the minimum action)
 
 <img src="figs/scen2_power.png" height="700" />
+
+The linear regression and zero inflated regression (count component both
+correctly identify the true effect at similar rates and sample sizes.

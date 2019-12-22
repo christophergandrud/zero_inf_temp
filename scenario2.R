@@ -61,37 +61,17 @@ ggplot(scen2_stats_multi_sim_df, aes(observations, p_value,
 ggsave(filename = "figs/scen2_pvalues.png")
 
 # Power (can we find any difference of the distributions) ----------------------
-
-# Power observed across simulations
-scen2_stats_multi_sim_df$sig_05 <- scen2_stats_multi_sim_df$p_value < 0.05
-fnr <- scen2_stats_multi_sim_df %>% group_by(estimate, observations) %>%
-    summarise(power = mean(sig_05)) 
-fnr$column_label <- "fnr"
-
-# Difference of means power test
-cohens_d <- true_diff_ab_scen2 / sqrt((true_sd_a^2 + true_sd_b^2) / 2)
-power_t <- function(x, d = cohens_d) {
-    pwr.t.test(n = x, d = cohens_d)$power
-}
-
-t_power <- tibble(
-    estimate = "t-test power",
-    observations = sample_sizes,
-    power = modify(sample_sizes, power_t),
-    column_label = "fnr"
-)
-fnr <- bind_rows(fnr, t_power)
-
-fnr_sub <- subset(fnr, estimate != "zero-inf (zero)")
-fnr_sub$estimate <- factor(fnr_sub$estimate, 
-                           levels = c("t-test power", "linear regression", 
-                                      "linear probability", "zero-inf (count)"),
+fnr$estimate <- factor(fnr$estimate, 
+                           levels = c("linear regression (original outcome)",
+                                      "linear probability", "zero-inf (count)",
+                                      "zero-inf (zero)"),
                            labels = c("t-test power (not from simulation)", 
                                       "linear regression (original outcome)",
                                       "linear probability (0, 1 transformed outcome)", 
-                                      "zero-inflated negative binomial (count)"))
+                                      "zero-inflated negative binomial (count)",
+                                      "zero-inlated negative binomial (zero)"))
 
-ggplot(fnr_sub, aes(observations, power)) +
+ggplot(fnr, aes(observations, power)) +
     facet_wrap(.~ estimate) +
     geom_line() +
     geom_hline(yintercept = 0.8, linetype = "dotted") +
