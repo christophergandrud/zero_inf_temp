@@ -1,3 +1,6 @@
+*_cache/
+/cache/
+
 *.Rout
 .DS_Store
 .RData

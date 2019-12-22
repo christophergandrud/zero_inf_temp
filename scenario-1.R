@@ -85,32 +85,42 @@ power_prop <- function(x) {
 }
 
 t_power <- tibble(
-    estimate = "t-test power",
+    estimate = "Mean difference (t-test)",
     observations = sample_sizes,
     power = modify(sample_sizes, power_t),
     column_label = "fnr"
 )
 
 prop_power <- tibble(
-    estimate = "difference of proportions power",
+    estimate = "Difference of proportions",
     observations = sample_sizes,
     power = modify(sample_sizes, power_prop),
     column_label = "fnr"
 )
 
-fnr <- bind_rows(fnr, t_power, prop_power)
+power_tests <- bind_rows(t_power, prop_power)
+power_tests$estimate <- factor(power_tests$estimate,
+                               levels = c("Mean difference (t-test)", 
+                                          "Difference of proportions"))
+
+ggplot(power_tests, aes(observations, power)) +
+    facet_wrap(.~ estimate, ncol = 2) +
+    geom_line() +
+    geom_hline(yintercept = 0.8, linetype = "dotted") +
+    scale_y_continuous(labels = scales::percent, breaks = seq(0.2, 1, 0.2)) +
+    ggtitle("Power of Identifying A != B",
+            subtitle = "Comparing Statistical Power for different parts of a zero-inflated distribution\nMean difference of 3.1%\n[0, 1] proportion difference 0.4%") +
+    xlab("\nSample Size per Treatment Arm") +
+    ylab("Power (post hoc, for any difference A vs. B)\n")
+ggsave(filename = "figs/compar_power.png", height = 5, width = 6)
 
 # fnr_sub <- subset(fnr, estimate != "zero-inf (count)")
 fnr$estimate <- factor(fnr$estimate, 
-                           levels = c("t-test power", 
-                                      "difference of proportions power", 
-                                      "linear regression", 
+                           levels = c("linear regression", 
                                       "linear probability", 
                                       "zero-inf (count)",
                                       "zero-inf (zero)"),
-                           labels = c("t-test power (not from simulation)", 
-                                      "difference of prop. power (not from sim.)",
-                                      "linear regression (original outcome)",
+                           labels = c("linear regression (original outcome)",
                                       "linear probability (0, 1 transformed outcome)", 
                                       "zero-inflated negative binomial (count)",
                                       "zero-inflated negative binomial (zero)"))
@@ -121,10 +131,10 @@ ggplot(fnr, aes(observations, power)) +
     geom_hline(yintercept = 0.8, linetype = "dotted") +
     scale_y_continuous(labels = scales::percent, breaks = seq(0.2, 1, 0.2)) +
     ggtitle("Power of Identifying A != B (50 simulations)",
-            subtitle = "Scenario 1: Treatment causes 0.1% increase in probability of a non-zero outcome.\nThis creates a relative mean difference of 3.1%") +
+            subtitle = "Scenario 1: Treatment causes 0.1% increase in probability of a\nnon-zero outcome\nThis creates a relative mean difference of 3.1%") +
     xlab("\nSample Size per Treatment Arm") +
-    ylab("Power (post hoc, for any difference A vs. B)\n")
-ggsave(filename = "figs/scen1_power.png", width = 6, height = 8)
+    ylab("Power (for any difference A vs. B)\n")
+ggsave(filename = "figs/scen1_power.png", width = 6, height = 6)
 
 # # Bias of parameter point estimate 
 # # (either difference of means or probability of any non-zero values)

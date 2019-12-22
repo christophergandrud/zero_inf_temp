@@ -99,5 +99,5 @@ ggplot(fnr_sub, aes(observations, power)) +
     ggtitle("Power of Identifying A != B (50 simulations)",
             subtitle = "Scenario 2: Treatment causes a relative mean difference of 3.1%") +
     xlab("\nSample Size per Treatment Arm") +
-    ylab("Power (post hoc, for any difference A vs. B)\n")
+    ylab("Power (for any difference A vs. B)\n")
 ggsave(filename = "figs/scen2_power.png", width = 8, height = 8)
